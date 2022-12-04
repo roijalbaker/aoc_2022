@@ -1,9 +1,8 @@
 # Advent of Code 2022
 
-My challenges for this year:
+My challenge for this year:
 
-* use Rust
-* Use Colemak keyboard
+* Use Colemak dh keyboard
 
 ## Python
 
