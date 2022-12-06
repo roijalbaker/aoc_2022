@@ -19,20 +19,17 @@ def parse_file(fn):
 
 
 if __name__ == "__main__":
-    stack, instructions = parse_file("day5_test1.txt")
+    stack, instructions = parse_file("day5_input1.txt")
 
     stack = np.array(stack)
-    print(stack)
 
-    empty_line = np.array([[' ']*stack.shape[0]])
-    print(empty_line)
+    empty_line = np.array([[' '] * stack.shape[1]])
 
+    break_next = 4
     for number, st_from, st_to in instructions:
-        print(number, st_from, st_to)
         temp = []
         for _ in range(number):
             index, el = next(((i, el) for (i, el) in enumerate(stack[:, st_from-1]) if el != ' '))
-            print(el)
             temp.append(el)
             stack[index, st_from-1] = ' '
 
@@ -42,8 +39,7 @@ if __name__ == "__main__":
                 stack = np.concatenate((empty_line, stack), axis=0)
                 index = 1
             elif index is None:
-                index = stack.shape[1]+1
-            print(index)
+                index = stack.shape[0]
             stack[index-1, st_to-1] = el
-    
-        print(stack)
+
+    print(stack)
