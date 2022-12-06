@@ -4,7 +4,7 @@ import numpy as np
 
 def parse_file(fn):
     stack = []
-    instructions = []
+
     with open(fn, "r") as f:
         for line in f.readlines():
             if "[" in line:
@@ -26,13 +26,13 @@ if __name__ == "__main__":
 
     empty_line = np.array([[' '] * stack.shape[1]])
 
-    break_next = 4
     for number, st_from, st_to in instructions:
         temp = []
         for _ in range(number):
             index, el = next(((i, el) for (i, el) in enumerate(stack[:, st_from-1]) if el != ' '))
             temp.append(el)
             stack[index, st_from-1] = ' '
+
         for el in (reversed(temp) if part == "b" else temp):
             index = next((i for i, el in enumerate(stack[:, st_to-1]) if el != ' '), None)
             if index == 0:
