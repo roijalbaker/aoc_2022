@@ -19,6 +19,7 @@ def parse_file(fn):
 
 
 if __name__ == "__main__":
+    part = "b"
     stack, instructions = parse_file("day5_input1.txt")
 
     stack = np.array(stack)
@@ -32,8 +33,7 @@ if __name__ == "__main__":
             index, el = next(((i, el) for (i, el) in enumerate(stack[:, st_from-1]) if el != ' '))
             temp.append(el)
             stack[index, st_from-1] = ' '
-
-        for el in temp:
+        for el in (reversed(temp) if part == "b" else temp):
             index = next((i for i, el in enumerate(stack[:, st_to-1]) if el != ' '), None)
             if index == 0:
                 stack = np.concatenate((empty_line, stack), axis=0)
