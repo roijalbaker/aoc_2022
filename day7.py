@@ -1,6 +1,7 @@
 from dataclasses import dataclass
-from typing import List, Any
+from typing import List
 from typing_extensions import Self
+
 
 @dataclass
 class File:
@@ -11,17 +12,19 @@ class File:
 @dataclass
 class Dir:
     name: str
-    parent: Any
+    parent: Self
 
     def __post_init__(self):
         self.dirs: List[Self] = []
         self.files: List[File] = []
+        self._size: int = None
 
     def append(self, obj):
         if isinstance(obj, Dir):
             self.dirs.append(obj)
         else:
             self.files.append(obj)
+        self._size = None
 
     def to(self, name) -> Self:
         if name == "..":
@@ -30,28 +33,32 @@ class Dir:
 
     @property
     def size(self):
-        size_dirs = sum([dir.size for dir in self.dirs])
-        size_files = sum([file.size for file in self.files])
+        if self._size is None:
+            self._size = sum([dir.size for dir in self.dirs])
+            self._size += sum([file.size for file in self.files])
 
-        return size_dirs + size_files
+        return self._size
 
     def __str__(self):
         return "\n".join(self.description(0))
 
-    def description(self, i=0, max_size=float("inf")):
+    def description(self, indent=0):
         descr = []
-        descr.append('\t'*i + f"-{self.name} ({self.size})")
+        descr.append('\t'*indent + f"-{self.name} ({self.size})")
         for dir in self.dirs:
-            descr.extend(dir.description(i+1))
+            descr.extend(dir.description(indent+1))
         for file in self.files:
-            descr.append('\t'*(i + 1) + f"*{file.name} ({file.size})")
+            descr.append('\t'*(indent + 1) + f"*{file.name} ({file.size})")
         return descr
 
 
 if __name__ == "__main__":
     main_dir = Dir("/", None)
     dir = main_dir
+
+    # keep separate list with all directories
     all_dirs: List[Dir] = []
+
     with open("day7_input1.txt") as f:
         for line in f.readlines()[1:]:
             line = line.strip()
@@ -70,9 +77,8 @@ if __name__ == "__main__":
                 size, name = line.split(" ")
                 dir.append(File(name, int(size)))
 
-    print(main_dir.size)
     sizes = [dir.size for dir in all_dirs]
-    print(sum([s for s in sizes if s <= 100_000]))
+    print("a", sum([s for s in sizes if s <= 100_000]))
 
     # Part b
     total_space = 70_000_000
@@ -80,4 +86,4 @@ if __name__ == "__main__":
     to_find = needed - (total_space - main_dir.size)
 
     all_dirs.sort(key=lambda dir: dir.size)
-    print(next(dir for dir in all_dirs if dir.size >= to_find).size)
+    print("b", next(dir for dir in all_dirs if dir.size >= to_find).size)
