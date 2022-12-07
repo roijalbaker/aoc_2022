@@ -5,10 +5,7 @@ from typing_extensions import Self
 @dataclass
 class File:
     name: str
-    _size: int
-
-    def size(self, min_size=0):
-        return self._size
+    size: int
 
 
 @dataclass
@@ -31,33 +28,31 @@ class Dir:
             return self.parent
         return next(dir for dir in self.dirs if dir.name == name)
 
-    def size(self, max_size=float("inf")):
-        size_dirs = sum([dir.size(max_size) for dir in self.dirs])
-        size_files = sum([file.size(0) for file in self.files])
+    @property
+    def size(self):
+        size_dirs = sum([dir.size for dir in self.dirs])
+        size_files = sum([file.size for file in self.files])
 
-        size = size_dirs + size_files
-        if size_files <= max_size:
-            return size + size_dirs
-        else:
-            return size_dirs
+        return size_dirs + size_files
 
     def __str__(self):
         return "\n".join(self.description(0))
 
     def description(self, i=0, max_size=float("inf")):
         descr = []
-        descr.append('\t'*i + f"-{self.name} ({self.size(max_size)})")
+        descr.append('\t'*i + f"-{self.name} ({self.size})")
         for dir in self.dirs:
             descr.extend(dir.description(i+1))
         for file in self.files:
-            descr.append('\t'*(i + 1) + f"*{file.name} ({file.size(0)})")
+            descr.append('\t'*(i + 1) + f"*{file.name} ({file.size})")
         return descr
 
 
 if __name__ == "__main__":
     main_dir = Dir("/", None)
     dir = main_dir
-    with open("day7_test1.txt") as f:
+    all_dirs = []
+    with open("day7_input1.txt") as f:
         for line in f.readlines()[1:]:
             line = line.strip()
 
@@ -69,10 +64,12 @@ if __name__ == "__main__":
 
             elif line.startswith("dir "):
                 dir.append(Dir(line.split(" ")[1], parent=dir))
+                all_dirs.append(dir.dirs[-1])
 
             else:
                 size, name = line.split(" ")
                 dir.append(File(name, int(size)))
 
-    print(main_dir.size())
-    print(main_dir.size(100_000))
+    print(main_dir.size)
+    sizes = [dir.size for dir in all_dirs]
+    print(sum([s for s in sizes if s <= 100_000]))
