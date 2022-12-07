@@ -51,7 +51,7 @@ class Dir:
 if __name__ == "__main__":
     main_dir = Dir("/", None)
     dir = main_dir
-    all_dirs = []
+    all_dirs: List[Dir] = []
     with open("day7_input1.txt") as f:
         for line in f.readlines()[1:]:
             line = line.strip()
@@ -73,3 +73,11 @@ if __name__ == "__main__":
     print(main_dir.size)
     sizes = [dir.size for dir in all_dirs]
     print(sum([s for s in sizes if s <= 100_000]))
+
+    # Part b
+    total_space = 70_000_000
+    needed = 30_000_000
+    to_find = needed - (total_space - main_dir.size)
+
+    all_dirs.sort(key=lambda dir: dir.size)
+    print(next(dir for dir in all_dirs if dir.size >= to_find).size)
