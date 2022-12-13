@@ -10,8 +10,9 @@ def to_ord(char):
 
 
 def parse_file(fn):
-    start = None
+    start = []
     end = None
+    s = None
     G = nx.DiGraph()
     with open(fn, "r") as f:
         lines = [line.strip() for line in f.readlines()]
@@ -40,9 +41,11 @@ def parse_file(fn):
             if char == "E":
                 end = node
             if char == "S":
-                start = node
+                s = node
+            if char in ["S", "a"]:
+                start.append(node)
             G.add_edges_from(edges)
-    return G, start, end
+    return G, s, start, end
 
 
 def export(fn, path):
@@ -58,8 +61,13 @@ def export(fn, path):
 
 if __name__ == "__main__":
     fn = "day12_input1.txt"
-    G, start, end = parse_file(fn)
-    path = nx.shortest_path(G, start, end)
-    print(path)
-    print(len(path) - 1)
-    export(fn, path)
+    G, start, starts, end = parse_file(fn)
+    print(len(nx.shortest_path(G, start, end)) - 1)
+    paths = []
+    for start in starts:
+        try:
+            path = nx.shortest_path(G, start, end)
+            paths.append(len(path) - 1)
+        except:
+            pass
+    print(min(paths))
