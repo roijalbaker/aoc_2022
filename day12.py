@@ -45,8 +45,21 @@ def parse_file(fn):
     return G, start, end
 
 
+def export(fn, path):
+    with open(fn, "r") as f:
+        lines = [line.strip() for line in f.readlines()]
+    with open("path.txt", "w") as f:
+        for i, line in enumerate(lines):
+            for j, char in enumerate(line):
+                node = f"{i}|{j}"
+                f.write(char if node in path else ".")
+            f.write("\n")
+
+
 if __name__ == "__main__":
-    G, start, end = parse_file("day12_test1.txt")
+    fn = "day12_input1.txt"
+    G, start, end = parse_file(fn)
     path = nx.shortest_path(G, start, end)
     print(path)
     print(len(path) - 1)
+    export(fn, path)
