@@ -3,9 +3,9 @@ import networkx as nx
 
 def to_ord(char):
     if char == "E":
-        return ord("z") + 1
+        return ord("z")
     if char == "S":
-        return ord("a") - 1
+        return ord("a")
     return ord(char)
 
 
