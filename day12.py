@@ -24,7 +24,7 @@ def parse_file(fn):
                 right = f"{i}|{j+1}"
                 char_right = lines[i][j+1]
                 diff = to_ord(char) - to_ord(char_right)
-                if diff in [1, 0]:
+                if diff <= 1:
                     edges.append((right, node))
                 if diff in [-1, 0]:
                     edges.append((node, right))
@@ -32,7 +32,7 @@ def parse_file(fn):
                 down = f"{i+1}|{j}"
                 char_down = lines[i+1][j]
                 diff = to_ord(char) - to_ord(char_down)
-                if diff in [1, 0]:
+                if diff <= 1:
                     edges.append((down, node))
                 if diff in [-1, 0]:
                     edges.append((node, down))
@@ -41,13 +41,12 @@ def parse_file(fn):
                 end = node
             if char == "S":
                 start = node
-
             G.add_edges_from(edges)
     return G, start, end
 
 
 if __name__ == "__main__":
-    G, start, end = parse_file("day12_input1.txt")
+    G, start, end = parse_file("day12_test1.txt")
     path = nx.shortest_path(G, start, end)
     print(path)
     print(len(path) - 1)
