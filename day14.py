@@ -37,11 +37,28 @@ def rocks_to_map(rocks):
 
 if __name__ == "__main__":
     rocks = parse_file("day14_test1.txt")
-    print(rocks)
     rocks = rocks_to_map(rocks)
-    print(rocks)
     np.savetxt("rocks.txt", rocks, fmt="%d")
     
     start = rocks.sum()
 
+    landed = True
+    while landed:
+        x = 500
+        for y in range(rocks.shape[0]):
+            
+            if y+1 == rocks.shape[0]:
+                landed = False
+                break
+            if rocks[y+1, x]:
+                if rocks[y+1, x-1]:
+                    if rocks[y+1, x+1]:
+                        rocks[y, x] = True
+                        break
+                    else:
+                        x += 1
+                else:
+                    x -= 1
+
+    np.savetxt("end.txt", rocks, fmt="%d")
     print(rocks.sum()-start)
