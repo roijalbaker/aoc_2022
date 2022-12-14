@@ -18,9 +18,9 @@ def parse_file(fn):
     return paths
 
 
-def rocks_to_map(rocks):
-    y_max, x_max = np.array(rocks).max(axis=1).max(axis=0)
-    blocked = np.array([[False] * (y_max+1)] * (x_max+1))
+def rocks_to_map(rocks, b=False):
+    x_max, y_max = np.array(rocks).max(axis=1).max(axis=0)
+    blocked = np.array([[False] * (x_max+1000)] * (y_max+1))
     for (start_x, start_y), (end_x, end_y) in rocks:
         if (x := start_x) == end_x:
             ys = range(start_y, end_y+1, 1) if end_y > start_y else range(end_y, start_y+1, 1)
@@ -32,12 +32,14 @@ def rocks_to_map(rocks):
                 blocked[y, x] = True
         else:
             raise ValueError()
+    if b:
+        blocked = np.concatenate((blocked, np.array([[False] * (x_max+1000)]), np.array([[True] * (x_max+1000)])), axis=0)
     return blocked
 
 
 if __name__ == "__main__":
     rocks = parse_file("day14_input.txt")
-    rocks = rocks_to_map(rocks)
+    rocks = rocks_to_map(rocks, True)
     np.savetxt("rocks.txt", rocks, fmt="%d")
 
     start = rocks.sum()
@@ -45,6 +47,8 @@ if __name__ == "__main__":
     landed = True
     while landed:
         x = 500
+        if rocks[0, 500]:  # part b
+            break
         for y in range(rocks.shape[0]):
 
             if y+1 == rocks.shape[0]:
