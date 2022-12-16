@@ -54,7 +54,6 @@ def solve_less_naive(sensors: List[Sensor], y):
         if s.beacon.y == y and s.beacon.x in covered_x:
             covered_x.remove(s.beacon.x)
     print(len(covered_x))
-    print(covered_x)
 
 
 def solve_naive(sensors: List[Sensor], y, x_min, x_max):
@@ -73,12 +72,12 @@ def solve_naive(sensors: List[Sensor], y, x_min, x_max):
 
 
 if __name__ == "__main__":
-    sensors_beacons = parse_file("day15_test1.txt")
+    sensors_beacons = parse_file("day15_input1.txt")
     sensors = [Sensor(s_x, s_y, Beacon(b_x, b_y)) for s_x, s_y, b_x, b_y in sensors_beacons]
     x_max = max([max(sensor.x, sensor.beacon.x) for sensor in sensors])
     x_min = min([min(sensor.x, sensor.beacon.x) for sensor in sensors])
     y_max = max([max(sensor.y, sensor.beacon.y) for sensor in sensors])
     y_min = min([min(sensor.y, sensor.beacon.y) for sensor in sensors])
     print(x_min, x_max, y_min, y_max)
-    solve_naive(sensors, 10, x_min, x_max)  # takes ages
-    solve_less_naive(sensors, 10)
+    # solve_naive(sensors, 10, x_min, x_max)  # takes ages
+    solve_less_naive(sensors, 2000000)
