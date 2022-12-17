@@ -3,7 +3,7 @@ import numpy as np
 from pydantic.dataclasses import dataclass
 from numpy.linalg import norm
 from typing import List
-
+from collections import OrderedDict
 
 def line_to_path(line: str):
     regex = r"at x=([-]*\d+), y=([-]*\d+): .*x=([-]*\d+), y=([-]*\d+)"
@@ -56,6 +56,27 @@ def solve_less_naive(sensors: List[Sensor], y):
     print(len(covered_x))
 
 
+def part2(sensors: List[Sensor], max_size=20):
+    # set a default dictionary for all y
+    not_covered = OrderedDict([])
+
+    # Initialize all possible x coordinates
+    for y in range(max_size + 1):
+        beacon_x = set([sensor.beacon.x for sensor in sensors if sensor.beacon.y == y])
+        not_covered.update({y: set(range(max_size + 1)).difference(beacon_x)})
+
+    # loop over sensors to remove possible x coordinates   
+    for s in sensors:
+        for y in range(max_size + 1):
+            dist_y = int(s.distance - norm(np.array([s.x, y]) - s.as_vector))
+            if dist_y > 0:
+                not_covered.update({y: not_covered[y].difference(set(range(s.x-dist_y, s.x+dist_y+1, 1)))})
+
+    y, x = next((key, list(value)[0]) for key, value in not_covered.items() if len(value) > 0)
+
+    print(4000000 * x + y)
+
+
 def solve_naive(sensors: List[Sensor], y, x_min, x_max):
     outside_range = []
     xrange = range(x_min-2, x_max + 2, 1)
@@ -72,7 +93,7 @@ def solve_naive(sensors: List[Sensor], y, x_min, x_max):
 
 
 if __name__ == "__main__":
-    sensors_beacons = parse_file("day15_input1.txt")
+    sensors_beacons = parse_file("day15_test1.txt")
     sensors = [Sensor(s_x, s_y, Beacon(b_x, b_y)) for s_x, s_y, b_x, b_y in sensors_beacons]
     x_max = max([max(sensor.x, sensor.beacon.x) for sensor in sensors])
     x_min = min([min(sensor.x, sensor.beacon.x) for sensor in sensors])
@@ -81,3 +102,4 @@ if __name__ == "__main__":
     print(x_min, x_max, y_min, y_max)
     # solve_naive(sensors, 10, x_min, x_max)  # takes ages
     solve_less_naive(sensors, 2000000)
+    part2(sensors, 20)
