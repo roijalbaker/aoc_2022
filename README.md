@@ -10,5 +10,5 @@ My challenge for this year:
 pyenv install -s 3.10.8
 pyenv virtualenv 3.10.8 aoc_2022
 pyenv local aoc_2022
-pip3 install networkx
+pip3 install networkx scipy numpy
 ```

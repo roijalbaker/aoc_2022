@@ -3,7 +3,9 @@ import numpy as np
 from pydantic.dataclasses import dataclass
 from numpy.linalg import norm
 from typing import List
+from scipy import sparse
 from collections import OrderedDict
+
 
 def line_to_path(line: str):
     regex = r"at x=([-]*\d+), y=([-]*\d+): .*x=([-]*\d+), y=([-]*\d+)"
@@ -34,10 +36,10 @@ class Sensor(Beacon):
     beacon: Beacon
 
     @property
-    def distance(self):
+    def distance(self) -> int:
         if not hasattr(self, "_distance"):
             self._distance = norm(self.as_vector - self.beacon.as_vector, 1)
-        return self._distance
+        return int(self._distance)
 
     def inside_range(self, x, y):
         # print("\t", self, x, y, self.distance, norm(self.as_vector - np.array([x, y])) <= self.distance)
@@ -77,6 +79,35 @@ def part2(sensors: List[Sensor], max_size=20):
     print(4000000 * x + y)
 
 
+def part2_less_naive(sensors: List[Sensor], max_size=20):
+    # Create a map in numpy
+    layout = np.ones((max_size+1, max_size+1))  # all points are visible
+
+    for sensor in sensors:
+        if 0 <= (b := sensor.beacon).x <= max_size and 0 <= b.y <= max_size:
+            layout[b.y, b.x] = 0
+
+    # loop over sensors to remove possible x coordinates   
+    for s in sensors:
+        for i, distance in enumerate(reversed(range(s.distance+1))):
+            # print(s.x + distance, -2*i -1, +2*i+1)
+            if 0 <= s.x + distance <= max_size:
+                layout[
+                    max(0, s.y - i):min(max_size + 1, s.y + i + 1),
+                    s.x + distance
+                ] = 0
+            if not distance:
+                continue
+            if 0 <= s.x - distance <= max_size:
+                layout[
+                    max(0, s.y - i):min(max_size+1, s.y + i + 1),
+                    s.x - distance
+                ] = 0
+    np.savetxt("part2.txt", layout, fmt="%d")
+    print((sol := (sparse.csr_matrix(layout).nonzero())))
+    return sol[1][0], sol[0][0]
+
+
 def solve_naive(sensors: List[Sensor], y, x_min, x_max):
     outside_range = []
     xrange = range(x_min-2, x_max + 2, 1)
@@ -102,4 +133,5 @@ if __name__ == "__main__":
     print(x_min, x_max, y_min, y_max)
     # solve_naive(sensors, 10, x_min, x_max)  # takes ages
     solve_less_naive(sensors, 2000000)
-    part2(sensors, 20)
+    x, y = part2_less_naive(sensors, 20)
+    print(4000000 * x + y)
