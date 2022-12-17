@@ -36,10 +36,16 @@ class Rock:
         y_min = min(self.y, other.y)
         x_max = max(self.x + self.width, other.x + other.width)
         y_max = max(self.y + self.height, other.y + other.height)
-        self_ = np.zeros((x_max - x_min, y_max - y_min))
+        self_ = np.zeros((y_max - y_min, x_max - x_min))
         other_ = self_.copy()
-        self_[self.x - x_min, self.x + self.width - x_min:self.y - y_min, self.y + self.height - y_min] = self.shape
-        other_[other.x - x_min, other.x + other.width - x_min:other.y - y_min, other.y + other.height - y_min] = other.shape
+        self_[
+            self.y - y_min : self.y + self.height - y_min,
+            self.x - x_min: self.x + self.width - x_min
+        ] = self.shape
+        other_[
+            other.y - y_min: other.y + other.height - y_min,
+            other.x - x_min: other.x + other.width - x_min
+        ] = other.shape
         return 2 in self_ + other_
 
 
