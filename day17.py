@@ -15,6 +15,7 @@ SHAPES = [
     np.ones((2,2)),
 ]
 WIDTH = 7
+NUM_OF_BLOCKS = 2022
 
 
 @dataclass
@@ -98,19 +99,21 @@ def fall(rocks: List[Rock], rock: Rock, height: int):
 
 if __name__ == "__main__":
     next_shape = cycle(SHAPES)
+    next_dir = cycle(TEST)
     height = 0
 
     rocks = []
     rock = Rock(next(next_shape), 3)
     landed = False
-    for dir in TEST:
+    while len(rocks) < NUM_OF_BLOCKS:
+        dir = next(next_dir)
         rock = rock if not landed else Rock(next(next_shape), height + 3)
-        print(dir, rock, WIDTH, height)
+        # print(dir, rock, WIDTH, height)
         push(rocks, rock, dir, WIDTH, height)
         landed = fall(rocks, rock, height)
-        print(" ", rock, "" if not landed else "has landed")
+        # print(" ", rock, "" if not landed else "has landed")
         if landed:
             rocks.append(rock)
             height = max(height, rock.y + rock.height)
-
     print(rocks)
+    print(height)
