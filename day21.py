@@ -35,5 +35,5 @@ def parse_file(fn) -> Dict[str, Monkey]:
 
 
 if __name__ == "__main__":
-    monkeys = parse_file("day21_test1.txt")
+    monkeys = parse_file("day21_input1.txt")
     print(monkeys["root"].value(monkeys))
